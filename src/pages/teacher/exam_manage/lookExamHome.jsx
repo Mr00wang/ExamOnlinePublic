@@ -1,5 +1,5 @@
 import React,{Component} from "react";
-import {Icon, Tabs, Card, List, message, Modal} from 'antd';
+import {Icon, Tabs, Card, List, message, Modal, Tooltip} from 'antd';
 import {formateDate} from "../../../utils/dateUtils";
 import {reqLookExams, reqUpdateExam} from "../../../api";
 import memoryUtils from "../../../utils/memoryUtils";
@@ -30,7 +30,6 @@ export default class LookExamHome extends Component{
         exams : [],
         exam : {},
         visible: false,
-
     };
 
     getExams = async () => {
@@ -58,6 +57,12 @@ export default class LookExamHome extends Component{
         this.props.history.push('/teacher/exam_manage/look/desc',testPaperId);
     };
 
+    //
+    lookCompleteDescTest = async (testPaperId,activityName) => {
+        const test = {testPaperId, activityName};
+        this.props.history.push('/teacher/exam_manage/look/complete_desc',(test));
+    };
+
     showModal = (exam) => {
         this.exam = exam;
         this.setState({
@@ -81,7 +86,6 @@ export default class LookExamHome extends Component{
                     ],
                     'examTime': parseInt(fieldsValue['examTime'].format('HH')) * 60 + parseInt(fieldsValue['examTime'].format('mm')),
                 };
-                // console.log('Received values of form: ', values);
                 const {activityName, isPrivate, examCalendar,  examTime} = values;
                 this.form.resetFields();
                 const request = await reqUpdateExam(this.exam.id, activityName, isPrivate, examCalendar[0], examCalendar[1], examTime);
@@ -89,7 +93,7 @@ export default class LookExamHome extends Component{
                     message.success("修改成功！");
                     this.getExams();
                 }else
-                    message.error(request.msg);
+                    message.error("修改失败！");
             }
         });
 
@@ -135,7 +139,9 @@ export default class LookExamHome extends Component{
                                         actions={[
                                             <Icon type="eye" key="eye" theme="twoTone" twoToneColor="#eb2f96" onClick={() => {this.lookdescTest(item.testPaperId)}}/>,
                                             <Icon type="edit" key="edit" theme="twoTone" twoToneColor="#eb2f96" onClick={() => {this.showModal(item)}}/>,
-                                            // <Icon type="ellipsis" key="ellipsis" />,
+                                            <Tooltip title="查看考生试卷详情">
+                                                <Icon type="ellipsis" key="ellipsis"   twoToneColor="#eb2f96" onClick={() => {this.lookCompleteDescTest(item.testPaperId, item.activityName)}}/>,
+                                            </Tooltip>,
                                         ]}
                                     >
                                         <span>

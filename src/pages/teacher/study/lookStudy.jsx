@@ -4,11 +4,11 @@ import React,{Component} from "react";
 
  */
 
-export default class MyPractice extends Component{
+export default class LookStudy extends Component{
     render() {
         return(
             <div>
-                MyPractice
+                LookStudy
             </div>
         )
     }

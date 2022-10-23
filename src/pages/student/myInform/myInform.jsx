@@ -43,7 +43,7 @@ export default class MyInform extends Component{
               loading:false
           })
       }else {
-          message.error(request.msg);
+          message.error("加载失败，请稍后再试！");
       }
     };
     componentDidMount() {

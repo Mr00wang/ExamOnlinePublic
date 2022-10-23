@@ -49,6 +49,7 @@ const titleTemplateList = [
                 "option": "D",
                 "content": "Ctrl +Enter"
             }
+
         ]
     },
     {

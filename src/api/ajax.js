@@ -15,6 +15,7 @@ import memoryUtils from "../utils/memoryUtils";
 
 export default function
     ajax(url, data={}, type='GET') {
+    // console.log(JSON.stringify(data));
     return new Promise((resolve, reject) => {
         let promise;
         if(type === 'GET') {

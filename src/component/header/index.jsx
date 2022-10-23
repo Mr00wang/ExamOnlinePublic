@@ -7,7 +7,6 @@ import storageUtils from "../../utils/storageUtils";
 import { Modal,message} from 'antd';
 import LinkButton from "../link-button";
 import memoryUtils from "../../utils/memoryUtils";
-
 class Header extends Component{
 
     state = {
@@ -59,23 +58,22 @@ class Header extends Component{
     layout = () => {
         Modal.confirm({
             title: '确定退出吗？',
-            //content: '确定退出吗？',
             onOk: () => {
                 //console.log('OK');
-                storageUtils.removeUser()
-                memoryUtils.user = {}
                 //删除保存的user数据
-                //console.log("header"+memoryUtils.user)
+                storageUtils.removeUser();
+                memoryUtils.user = {};
+
                 //跳转到Login
                 message.success('退出成功');
-                this.props.history.replace('/login')
+                this.props.history.replace('/userlogin')
             }
 
         });
     };
 
     render() {
-        const {currentTime} = this.state;
+        // const {currentTime} = this.state;
         const {username} = memoryUtils.user;
         const title = this.getTitle();
         return(

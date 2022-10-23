@@ -1,39 +1,41 @@
-import React,{Component} from "react";
+import React, {Component} from "react";
 import {Icon, Tabs, Card, List, message, Modal, Button} from 'antd';
 import {formateDate} from "../../../utils/dateUtils";
 import {reqLookCompleteExam} from "../../../api";
+
 const {TabPane} = Tabs;
-const { confirm } = Modal;
+const {confirm} = Modal;
 /*
 
  */
 
 
-export default class MyExam extends Component{
+export default class MyExam extends Component {
     state = {
-        loading : false,
-        exams : [],
+        loading: false,
+        exams: [],
         visible: false,
 
     };
 
     getExams = async () => {
-        this.setState({loading:true});
+        this.setState({loading: true});
         const request = await reqLookCompleteExam();
         if (request.code === 200) {
             const exams = request.data;
             this.setState({
                 exams,
-                loading:false
+                loading: false
             })
-        }else {
-            message.error(request.msg);
+        } else {
+            message.error("加载错误，正在反馈技术人员！");
         }
     };
 
     componentDidMount() {
         this.getExams();
     }
+
     ConfirmJoinExam = (examId, name) => {
 
         confirm({
@@ -48,17 +50,20 @@ export default class MyExam extends Component{
             okText: '确定',
             okType: 'primary',
             cancelText: '取消',
-            onOk: () => {this.props.history.push(`/exam/${examId}`, {examId, name})},
-            onCancel: () => {}
+            onOk: () => {
+                this.props.history.push(`/exam/${examId}`, {examId, name})
+            },
+            onCancel: () => {
+            }
         })
     };
 
     render() {
         const {loading, exams} = this.state;
         // const exam = this.exam || {};
-        return(
+        return (
             <Card
-                style={{ width: '100%' }}
+                style={{width: '100%'}}
             >
                 <Tabs
                     defaultActiveKey="1"
@@ -67,14 +72,14 @@ export default class MyExam extends Component{
                     <TabPane
                         tab={
                             <span>
-                              <Icon type="check-circle" />
+                              <Icon type="check-circle"/>
                               全部
                             </span>
                         }
                         key="1"
                     >
                         <List
-                            grid={{ gutter: 16, column: 4 }}
+                            grid={{gutter: 16, column: 4}}
                             dataSource={exams}
                             // pagination={{defaultPageSize: 12,showQuickJumper: true}}
                             loading={loading}
@@ -85,7 +90,9 @@ export default class MyExam extends Component{
                                         hoverable
                                         style={{fontSize: 16}}
                                         actions={[
-                                            <Button type="primary" onClick={() => {this.ConfirmJoinExam(item.id, item.activityName)}}>开始考试</Button>
+                                            <Button type="primary" onClick={() => {
+                                                this.ConfirmJoinExam(item.id, item.activityName)
+                                            }}>开始考试</Button>
                                             // <Icon type="eye" key="eye" theme="twoTone" twoToneColor="#eb2f96" onClick={() => {this.lookdescTest(item.testPaperId)}}/>,
                                             // <Icon type="edit" key="edit" theme="twoTone" twoToneColor="#eb2f96" onClick={() => {this.showModal(item)}}/>,
                                             // <Icon type="ellipsis" key="ellipsis" />,
@@ -111,7 +118,7 @@ export default class MyExam extends Component{
                     <TabPane
                         tab={
                             <span>
-                              <Icon type="info-circle" />
+                              <Icon type="info-circle"/>
                               已开始
                             </span>
                         }
@@ -122,7 +129,7 @@ export default class MyExam extends Component{
                     <TabPane
                         tab={
                             <span>
-                              <Icon type="clock-circle" />
+                              <Icon type="clock-circle"/>
                               未开始
                             </span>
                         }
@@ -133,7 +140,7 @@ export default class MyExam extends Component{
                     <TabPane
                         tab={
                             <span>
-                              <Icon type="close-circle" />
+                              <Icon type="close-circle"/>
                               已结束
                             </span>
                         }

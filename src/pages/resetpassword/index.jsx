@@ -315,7 +315,7 @@ class ResetPassword extends Component{
                     </div>
                 </div>
                 <div className="resetpwd-bottom">
-                    <div>Copyright&copy;2019该版权归郑州轻工业大学软件创新基地所有</div>
+                    <div>Copyright&copy;2020 Software Innovation Base Of Zhengzhou University Of Light Industry. All Rights Reserved</div>
                 </div>
             </div>
         )

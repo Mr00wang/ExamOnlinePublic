@@ -69,18 +69,23 @@ export default class LookTitles extends Component{
           },
           {
               title: "试题答案",
-              dataIndex: "answerList",
-              render: answerList => (
+              render: (record) => (
                   <span>
                      {
-                         answerList.map(answer => {
-                             let color = answer.length > 5 ? 'geekblue' : 'green';
-                             if (answer === 'loser') {
+                         record.answerList.map(item => {
+                             let color ='green';
+                             let answerCode = "";
+                            /* if (item.answer === 'loser') {
                                  color = 'volcano';
-                             }
+                             }*/
+                            if (record.type !== 1) {
+                                answerCode = String.fromCharCode(64 + parseInt(item.answer));
+                            } else {
+                                answerCode = item.answer;
+                            }
                              return (
-                                 <Tag color={color} key={answer}>
-                                     {answer.toUpperCase()}
+                                 <Tag color={color} key={item.answer}>
+                                     {answerCode}
                                  </Tag>
                              );
                          })

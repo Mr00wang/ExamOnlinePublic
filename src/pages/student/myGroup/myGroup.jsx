@@ -1,4 +1,4 @@
-import React,{Component} from "react";
+import React, {Component} from "react";
 import {Button, Card, message, Table, Input, Modal} from "antd";
 import {formateDate1} from "../../../utils/dateUtils";
 import {
@@ -9,18 +9,19 @@ import {
 } from "../../../api";
 import memoryUtils from "../../../utils/memoryUtils";
 import CommitGroup from "./commitGroup";
+
 const {Search} = Input;
 
 /*
 
  */
 
-export default class MyGroup extends Component{
+export default class MyGroup extends Component {
     state = {
         loading: false,
         showStatus: 0, // 标识添加/更新的确认框是否显示, 0: 都不显示, 1: 显示添加, 2: 显示更新
-        groups:[],
-        value:"",
+        groups: [],
+        value: "",
         textAreaValue: "",
         CommitVisible: false
     };
@@ -50,7 +51,9 @@ export default class MyGroup extends Component{
                 width: 100,
                 render: (group) => (
                     <span>
-                        <Button  type="danger" onClick={() => {this.exitGroup(group)}} disabled>退出</Button>
+                        <Button type="danger" onClick={() => {
+                            this.exitGroup(group)
+                        }} disabled>退出</Button>
                     </span>
                 )
             },
@@ -80,7 +83,9 @@ export default class MyGroup extends Component{
                 width: 100,
                 render: (group) => (
                     <span>
-                        <Button  type="primary" onClick={() => {this.showModal(group)}}>申请加入</Button>
+                        <Button type="primary" onClick={() => {
+                            this.showModal(group)
+                        }}>申请加入</Button>
                     </span>
                 )
             },
@@ -93,14 +98,14 @@ export default class MyGroup extends Component{
         this.setState({loading: true});
         const result = await reqLookJoinGroup(memoryUtils.student.userId);
         this.setState({loading: false});
-        if (result.code === 200){
+        if (result.code === 200) {
             const groups = result.data;
             //更新状态
             this.setState({
                 groups
             })
-        }else{
-            message.error('获取成员列表失败')
+        } else {
+            message.error('获取成员列表失败,正在反馈技术人员！')
         }
     };
 
@@ -113,30 +118,30 @@ export default class MyGroup extends Component{
     }
 
     exitGroup = async (group) => {
-      const request = await reqDeleteGroup(group.id, memoryUtils.student.userId);
-      if (request.code === 200) {
-          message.success('退出成功！');
-      }else {
-          message.error(request.msg);
-      };
-      this.setState({
-          titles : this.state.titles.filter(item => item.id !== group.id)
+        const request = await reqDeleteGroup(group.id, memoryUtils.student.userId);
+        if (request.code === 200) {
+            message.success('退出成功！');
+        } else {
+            message.error(request.msg);
+        }
+        ;
+        this.setState({
+            titles: this.state.titles.filter(item => item.id !== group.id)
 
-      })
+        })
     };
 
     showModal = (group) => {
-        this.group = group
+        this.group = group;
         this.setState({
             CommitVisible: true
         })
     };
 
 
-
-    CommitGroup=  () => {
-        this.form.validateFields(async (err,values) => {
-            if(!err) {
+    CommitGroup = () => {
+        this.form.validateFields(async (err, values) => {
+            if (!err) {
                 // 隐藏确认框
                 this.setState({
                     CommitVisible: false
@@ -148,8 +153,8 @@ export default class MyGroup extends Component{
                 const request = await reqApplyAddGroup(id, memoryUtils.student.userId, desc);
                 if (request.code === 200) {
                     message.success("提交成功，等待审核！");
-                }else {
-                    message.error(request.msg);
+                } else {
+                    message.error("提交失败，请稍后再试！");
                 }
 
             }
@@ -198,22 +203,22 @@ export default class MyGroup extends Component{
                 <Search
                     placeholder="输入群组ID搜索添加群组"
                     enterButton="Search"
-                    style={{ width: 400 }}
+                    style={{width: 400}}
                     // size="large"
                     onSearch={value => this.searchTest(value)}
                 />
             </span>
         );
 
-        return(
-            <Card title={title} >
+        return (
+            <Card title={title}>
                 <Table
                     bordered={true}
                     rowKey='id'
                     loading={loading}
                     dataSource={groups}
                     columns={value === "" ? this.columns : this.columns2}
-                    pagination={{defaultPageSize: 5,showQuickJumper: true, pageSizeOptions : [5,10,15,20]}}
+                    pagination={{defaultPageSize: 5, showQuickJumper: true, pageSizeOptions: [5, 10, 15, 20]}}
                 />
                 <Modal
                     title="加入群组"
@@ -224,7 +229,9 @@ export default class MyGroup extends Component{
                     onCancel={this.handleCancel}
                 >
                     <CommitGroup
-                        setForm={(form) => {this.form = form}}
+                        setForm={(form) => {
+                            this.form = form
+                        }}
                         id={group.id}
                     />
                 </Modal>

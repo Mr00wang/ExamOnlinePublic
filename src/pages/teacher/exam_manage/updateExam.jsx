@@ -64,9 +64,6 @@ class UpdateExam extends Component{
 
     render() {
         const {exam} = this.props;
-        console.log(exam);
-        console.log(formateDate(exam.startTime));
-        console.log(formateDate2(exam.examDuration));
         const {disabled, testPaper, groups} = this.state;
         const {getFieldDecorator} = this.props.form;
         const config = {

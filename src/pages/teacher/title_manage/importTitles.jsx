@@ -114,7 +114,6 @@ export default class ImportTitles extends Component{
         if (data) {
             for (let i in data) {
                 if (data) {
-                    console.log(data[i]);
                     const optionA = data[i].optionList.filter(item => item.option === 'A');
                     const optionB = data[i].optionList.filter(item => item.option === 'B');
                     const optionC = data[i].optionList.filter(item => item.option === 'C');
@@ -154,7 +153,8 @@ export default class ImportTitles extends Component{
     };
 
     ImportToJSON = (file) => {
-        // 获取上传的文件对象
+        message.warn("技术人员正在修改！");
+       /* // 获取上传的文件对象
         const { files } = file.target;
         // 通过FileReader对象读取文件
         const fileReader = new FileReader();
@@ -176,15 +176,13 @@ export default class ImportTitles extends Component{
                 }
                 // 最终获取到并且格式化后的 json 数据
                 message.success('上传成功！');
-                console.log(data);
             } catch (e) {
                 // 这里可以抛出文件类型错误不正确的相关提示
-                console.log(e)
                 // message.error('文件类型不正确！');
             }
         };
         // 以二进制方式打开文件
-        fileReader.readAsBinaryString(files[0]);
+        fileReader.readAsBinaryString(files[0]);*/
     };
 
     uploadFilesChange(file) {
@@ -238,8 +236,12 @@ export default class ImportTitles extends Component{
     render() {
         const {titles} = this.state;
         const title = (
-            <div style={{ marginTop: 100 }}>
-                <Dragger name="file"
+            <div>
+                <Button type="primary" onClick={this.ImportToJSON}>
+                    <Icon type="import"/>
+                    <span>上传试题</span>
+                </Button>
+                {/*<Dragger name="file"
                          accept=".xls, .xlsx"
                          beforeUpload={function () {
                              return false;
@@ -250,7 +252,7 @@ export default class ImportTitles extends Component{
                         <span>点击上传文件</span>
                         或者拖拽上传
                     </p>
-                </Dragger>
+                </Dragger>*/}
             </div >
         );
         const extra = (

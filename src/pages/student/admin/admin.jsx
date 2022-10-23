@@ -26,14 +26,12 @@ export default class Admin extends Component{
             title: '确定退出吗？',
             //content: '确定退出吗？',
             onOk: () => {
-                //console.log('OK');
                 //删除保存的user数据
                 memoryUtils.student = {};
                 storageUtils.removeStudent();
-                //console.log("header"+memoryUtils.user)
                 //跳转到Login
                 message.success('退出成功');
-                this.props.history.replace('/login')
+                this.props.history.replace('/userlogin')
             }
 
         });
@@ -41,7 +39,7 @@ export default class Admin extends Component{
     render() {
         const {username} = memoryUtils.student;
         if (!memoryUtils.student) {
-            return <Redirect to='/userlogin' />
+            return <Redirect to='/userlogin'/>
         }
         return(
             <Layout className="layout">

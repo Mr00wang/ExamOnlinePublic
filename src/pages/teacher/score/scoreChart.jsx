@@ -28,7 +28,6 @@ export default class ScoreChart extends Component{
         const request = await reqGetScore(testPaperId);
         if (request.code === 200) {
             const score = request.data;
-            console.log(request.data);
             score.map(item => {
                 userNoteName.push(item.userNoteName);
                 scores.push(item.finalScore);

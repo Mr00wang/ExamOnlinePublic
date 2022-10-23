@@ -1,5 +1,5 @@
 import React,{Component} from "react";
-import {Card, Icon, List, message, Tag} from "antd";
+import {Card, Icon, List, message, Tag, BackTop} from "antd";
 import LinkButton from "../../../component/link-button";
 import {reqLookDescTest} from "../../../api";
 import memoryUtils from "../../../utils/memoryUtils";
@@ -86,15 +86,12 @@ export default class LookDescPractice extends Component{
             const data1 = request.data;
             const [test1] = data1;
             const {testPaperSubjectVoList, name} = test1;
-            console.log(test1);
-            console.log(testPaperSubjectVoList);
             this.setState({
                 name,
                 data : data1,
                 test : test1,
                 testPaperSubjectVoList,
             });
-            // console.log(request.data);
         } else {
             message.error("查询失败")
         }
@@ -128,13 +125,28 @@ export default class LookDescPractice extends Component{
                 <List
                     itemLayout="vertical"
                     dataSource={testPaperSubjectVoList}
-                    renderItem={(item, index) => (
+                    renderItem={(item, index) => {
+                        let type = "";
+                        if (item.type === 0) {
+                            type = '单选题';
+                        } else if (item.type === 1) {
+                            type = '填空题'
+                        } else if (item.type === 2) {
+                            type = '简答题';
+                        } else if (item.type === 3) {
+                            type = '多选题';
+                        } else if (item.type === 4) {
+                            type = '判断题'
+                        }
+                        return (
                         <List.Item>
-                            <div className="test_title">
-                                <span>{index + 1 + '、'}</span>
-                                {item.question + " " +`(${item.subjectScore}分)`}
-                            </div><br/>
-                            <div className="test_option">
+                        <div className="test_title">
+                        <span>{index + 1 + '、'}</span>
+                        {`(${type})`+item.question + " " +`(${item.subjectScore}分)`}
+                        </div><br/>
+                        <div className="test_option">
+                        {
+                            item.type !== 1 ? (
                                 <ul>
                                     {
                                         item.optionVoList.map((data, index) => {
@@ -144,48 +156,36 @@ export default class LookDescPractice extends Component{
                                         })
                                     }
                                 </ul>
-                            </div>
-
-                            <div className="test_answer">
-                                <span>
-                                    正确答案：{item.answerList.map((data, index) => {
-                                    return(
-                                        <Tag color='green'>{data}</Tag>
-                                    )
-                                })}
-                                </span>
-                            </div>
+                            ):null
+                        }
+                        </div>
+                        <div className="test_answer">
+                        <span>
+                        标准答案：{item.answerVoList.map((data, index) => {
+                            let color ='green';
+                            let answerCode = "";
+                            /* if (item.answer === 'loser') {
+                                 color = 'volcano';
+                             }*/
+                            if (item.type !== 1) {
+                                answerCode = String.fromCharCode(64 + parseInt(data.answer));
+                            } else {
+                                answerCode = data.answer;
+                            }
+                            return (
+                                <Tag color={color} key={data.answer}>
+                                    {answerCode}
+                                </Tag>
+                            );
+                        })}
+                        </span>
+                            <BackTop/>
+                        </div>
                         </List.Item>
-                    )}
+
+                        )
+                    }}
                 />
-               {/* <List
-                    dataSource={testPaperSubjectVoList}
-                    renderItem={item => (
-                        <List.item>
-                            <div className="test_title">{item.question + " " +item.subjectScore + '分'}</div>
-                            <ul>
-                                {
-                                    item.optionVoList.map((data, index) => {
-                                        return(
-                                            <li datatype="A">{data.content}</li>
-                                        )
-                                    })
-                                }
-                            </ul>
-                            <div>
-                                <span>
-                                    正确答案：{item.answerList.map((data, index) => {
-                                        return(
-                                            <Tag color='green'>{data}</Tag>
-                                        )
-                                })}
-                                </span>
-                            </div>
-                        </List.item>
-
-                    )}
-                />*/}
-
             </Card>
 
         )

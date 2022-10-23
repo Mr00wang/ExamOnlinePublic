@@ -16,7 +16,7 @@ class AddGroup extends Component{
         this.props.setForm(this.props.form)
     }
     render() {
-        const {getFieldDecorator} = this.props.form
+        const {getFieldDecorator} = this.props.form;
         return(
             <Form>
                 <span>分组名称</span>

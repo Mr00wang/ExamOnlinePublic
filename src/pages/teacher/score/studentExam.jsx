@@ -1,61 +1,47 @@
 import React,{Component} from "react";
-import {BackTop, Button, Card, Icon, List, message, Tag} from "antd";
 import LinkButton from "../../../component/link-button";
-import {reqLookDescTest} from "../../../api";
-import memoryUtils from "../../../utils/memoryUtils";
-import {formateDate1} from "../../../utils/dateUtils";
-import './lookdescexam.less'
-export default class LookDescExam extends Component{
+import {Icon, Card, List, Tag, BackTop} from "antd";
+/*
+
+ */
+
+export default class StudentExam extends Component{
     state = {
-        id: this.props.location.state,
-        data:[],
-        test:{},
+        studentName:"",
         testPaperSubjectVoList:[],
-        name:""
+        completeTestPaperScore: "",
+    };
+    getExam = () => {
+      const {completeTestPaperUserNoteName,
+          completeTestPaperScore,
+          testPaperSubjectVoList}  = this.props.location.state;
+      this.setState({
+          studentName: completeTestPaperUserNoteName,
+          completeTestPaperScore,
+          testPaperSubjectVoList
+      })
     };
 
-    getDescTest = async () => {
-        const request = await reqLookDescTest(memoryUtils.user.userId, this.state.id);
-        if (request.code === 200) {
-            const data1 = request.data;
-            const [test1] = data1;
-            const {testPaperSubjectVoList, name} = test1;
-            this.setState({
-                data : data1,
-                test : test1,
-                testPaperSubjectVoList,
-                name
-            });
-        } else {
-            message.error("查询失败")
-        }
-    };
-
-    componentDidMount() {
-        this.getDescTest();
+    componentDidMount(): void {
+        this.getExam();
     }
-    render() {
-        const { test, testPaperSubjectVoList, name} = this.state;
-        const title = (
-            <div>
-                <span>📅&nbsp;{formateDate1(test.testPaperCreateDate)}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span>⏰&nbsp;总分值 &nbsp;{test.testPaperTotalScore}</span>
-            </div>
-        );
-        const extra = (
-            <span>
-                <span>
-                    <span>{name}</span>
-                    <Icon type="arrow-right" style={{marginLeft: 5}}/>
-                    <LinkButton onClick={() =>
-                        this.props.history.goBack()}>返回
-                    </LinkButton>
-                </span>
-            </span>
 
+    render() {
+        const {studentName, testPaperSubjectVoList} = this.state;
+        const title = (
+            <span>
+                <LinkButton onClick={() =>
+                    this.props.history.goBack()}>返回考生试卷详情</LinkButton>
+                    <Icon type="arrow-right" style={{marginRight: 5}}/>
+                <span>{studentName}</span>
+                <span></span>
+            </span>
         );
         return(
-            <Card title={title} extra={extra}>
+            <Card title={title}>
+                <BackTop>
+                    <div className="ant-back-top-inner">UP</div>
+                </BackTop>
                 <List
                     itemLayout="vertical"
                     dataSource={testPaperSubjectVoList}
@@ -111,14 +97,30 @@ export default class LookDescExam extends Component{
                                     {answerCode}
                                 </Tag>
                             );
+                        })}<br/>
+                        你的答案：{item.userAnswerList.map((data, index) => {
+                            let color ='';
+                            let result = "";
+                            if (data.rightOrNot) {
+                                color = "blue";
+                                result = "√";
+                            }else {
+                                color = "red";
+                                result = "×";
+                            }
+                            return (
+                                <Tag color={color}>
+                                    {result}
+                                </Tag>
+                            );
                         })}
                         </span>
                                 </div>
-                                {/*<BackTop/>*/}
                             </List.Item>
                         )
                     }}
                 />
+
             </Card>
 
         )

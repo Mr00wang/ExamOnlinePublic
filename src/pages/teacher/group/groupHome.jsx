@@ -155,8 +155,6 @@ export default class GroupHome extends Component{
     showUpdate = (group) => {
         // 保存分类对象
         this.group = group;
-        //console.log(user)
-        //console.log(user.memberName)
         // 更新状态
         this.setState({
             showStatus: 2
@@ -164,7 +162,6 @@ export default class GroupHome extends Component{
     };
 
     deleteGroup = (group) => {
-        //console.log(user)
         Modal.confirm({
             title: `确认删除${group.groupName}吗?`,
             onOk: async () => {
@@ -175,7 +172,7 @@ export default class GroupHome extends Component{
                         "")
                     this.getGroup();
                 }else{
-                    message.error(result.msg)
+                    message.error("删除失败！")
                 }
             }
         })
@@ -190,6 +187,8 @@ export default class GroupHome extends Component{
                 <Icon type="plus"/>
                 <span>添加群组</span>
             </Button>
+
+
         );
         return(
             <Card title={title} >

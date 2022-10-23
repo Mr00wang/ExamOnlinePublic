@@ -3,7 +3,6 @@
  */
 
 import React,{Component} from 'react';
-//import {Button,message} from 'antd'
 import {BrowserRouter, Route,Switch} from 'react-router-dom'
 import Login from "./pages/login";
 import Register from "./pages/register"
@@ -13,9 +12,6 @@ import Teacher from "./pages/teacher/admin/admin";
 import Student from "./pages/student/admin/admin"
 import Exam from "./pages/exam/Exam";
 export default class App extends Component{
-
-
-
     render() {
         return(
             <BrowserRouter>
@@ -28,7 +24,6 @@ export default class App extends Component{
                     <Route path='/exam/:examId' component={Exam}/>
                     <Route path='/' component={Home}/>
                 </Switch>
-
             </BrowserRouter>
         )
     }

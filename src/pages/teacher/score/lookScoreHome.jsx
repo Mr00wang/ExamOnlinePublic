@@ -49,10 +49,11 @@ export default class LookScoreHome extends Component{
             },
             {
                 title: '操作',
-                width: 300,
+                width: 260,
                 render: (exam) => (
                     <span>
-                        <Button onClick={() => this.props.history.push("/teacher/score_manage/look/chart", {exam})} type="primary" style={{marginRight: 10 }} >查看成绩</Button>
+                        <Button onClick={() => {this.lookScore(exam)}} type="primary" style={{marginRight: 10 }} >查看成绩</Button>
+                        <Button onClick={() => this.props.history.push("/teacher/score_manage/look/chart", {exam})}  style={{backgroundColor:'orange',color:'white', marginRight: 10}} >可视化成绩</Button>
                     </span>
                 )
             },
@@ -63,7 +64,6 @@ export default class LookScoreHome extends Component{
     getExams = async () => {
         let exam = this.state.exam;
         exam['createUserId'] = memoryUtils.user.userId;
-        console.log(exam);
         this.setState({loading:true});
         const request = await reqLookExams(exam);
         if (request.code === 200) {
@@ -75,6 +75,12 @@ export default class LookScoreHome extends Component{
         }else {
             message.error(request.msg);
         }
+    };
+
+    lookScore = (exam) => {
+        const {testPaperId, activityName} = exam;
+        const test = {testPaperId, activityName};
+        this.props.history.push('/teacher/score_manage/look/complete_desc',(test));
     };
 
     componentDidMount() {

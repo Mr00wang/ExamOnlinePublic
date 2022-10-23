@@ -26,11 +26,11 @@ export default class AddTitles extends Component{
           ],
           optionList:[
               {
-                option:"A",
+                option:"1",
                 content:"正确"
               },
               {
-                  option:"B",
+                  option:"2",
                   content:"错误"
               },
           ],
@@ -63,12 +63,19 @@ export default class AddTitles extends Component{
             ],
         },
         modalVisible:false,
+        fillTitleNum:[
+            "1"
+        ],
+        fillTitleContent:[
+          ""
+        ],
         fillTitle: {
             type:1,
             question:"",
             tag:"",
             answerList:[
-            ]
+            ],
+            optionList:[]
         },
         fillAnswer:"",
     };
@@ -91,7 +98,6 @@ export default class AddTitles extends Component{
 
     //题目
     questionChange = (e) => {
-        console.log(e.target.value);
         this.setState({
             question: e.target.value
         })
@@ -99,7 +105,6 @@ export default class AddTitles extends Component{
 
     //单选答案
     optionTitleChange = (e) => {
-        console.log(e.target.value);
         this.setState({
             optionValue: e.target.value
         })
@@ -112,29 +117,28 @@ export default class AddTitles extends Component{
         OptionsContent[index] = e.target.value;
         this.setState({
             OptionsContent
-        }, () => {console.log(this.state.OptionsContent)});
+        }, () => {});
     };
-
     //多选答案
     checkboxTitleChange = (checkedValues) => {
-        console.log('checked = ', checkedValues);
         this.setState({
             checkedValues: checkedValues
         })
     };
-
     //判断答案
     judgeTitleChange = (e) => {
         this.setState({
             judgeValue: e.target.value
         })
     };
-
     //填空答案
     fillTitleChange = (e) => {
+        const index = e.target.id;
+        const {fillTitleContent} = this.state;
+        fillTitleContent[index] = e.target.value;
         this.setState({
-            fillAnswer: e.target.value
-        })
+            fillTitleContent
+        }, () => {})
     };
 
     /*
@@ -142,7 +146,6 @@ export default class AddTitles extends Component{
     * */
 
     changeTitleType() {
-        // console.log(this.state.titleType);
         if (this.state.titleType === '单选题') {
             return (
                 <div className="addQuestion" style={{backgroundColor: '#27dfb52b', marginTop: 20}}>
@@ -303,8 +306,25 @@ export default class AddTitles extends Component{
                         />
                     </div>
                     <div className="fill-black">
-                        <Tag  color="green" style={{fontSize:18, width: 100, height:40, paddingTop:8}}>正确答案</Tag>
-                        <Input placeholder="请输入正确答案" style={{width: 500, height: 55}} value={this.state.fillAnswer} onChange={this.fillTitleChange}/>
+                        {
+                            this.state.fillTitleNum.map((data, index) => {
+                                return(
+                                    <div style={{paddingTop:12}}>
+                                        <Tag  color="green" style={{fontSize:18, width: 65, height:28, paddingTop:3}}>{`填空${data}`}</Tag>
+                                        <Input id={index} value={this.state.fillTitleContent[index]} placeholder={`请输入填空${data}答案`} style={{width: 500}}  onChange={this.fillTitleChange}/>                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                    <div className="fill-button">
+                        <Button type="primary" onClick={this.addFill}>
+                            <Icon type="plus"/>
+                            <span>增加填空</span>
+                        </Button>
+                        <Button type="danger" style={{marginLeft: 16}} onClick={this.deleteFill}>
+                            <Icon type="minus" />
+                            <span>减少填空</span>
+                        </Button>
                     </div>
                     <div className="title">
                         <Tag color="green" style={{fontSize:18, width: 50, height:28, paddingTop:3}}>解析</Tag>
@@ -390,20 +410,36 @@ export default class AddTitles extends Component{
             Options: [...this.state.Options, String.fromCharCode(65 + length)],
             OptionsContent: [...this.state.OptionsContent, ""]
         });
-        console.log(this.state.Options);
-        console.log(this.state.OptionsContent);
     };
 
     deleteOption = () => {
         this.state.Options.pop();
         this.state.OptionsContent.pop();
-        console.log(this.state.Options);
-        console.log(this.state.OptionsContent);
          this.setState({
              // eslint-disable-next-line no-undef
              Options: this.state.Options,
              OptionsContent: this.state.OptionsContent
          })
+    };
+
+    addFill = () => {
+        const length = this.state.fillTitleNum.length;
+
+        this.setState({
+            // eslint-disable-next-line no-undef
+            fillTitleNum: [...this.state.fillTitleNum, String(parseInt(this.state.fillTitleNum[length-1]) + 1)],
+            fillTitleContent: [...this.state.fillTitleContent, ""]
+        });
+    };
+
+    deleteFill = () => {
+        this.state.fillTitleNum.pop();
+        this.state.fillTitleContent.pop();
+        this.setState({
+            // eslint-disable-next-line no-undef
+            fillTitleNum: this.state.fillTitleNum,
+            fillTitleContent: this.state.fillTitleContent
+        })
     };
 
     //单选/多选
@@ -421,18 +457,19 @@ export default class AddTitles extends Component{
             message.error("请输入题目");
         else {
             if (flag) {
-                answerList.push(this.state.optionValue);
+                answerList.push({"option":`1`, "answer":`${this.state.optionValue.charCodeAt() - 64}`});
             } else {
                 checkedValues.map((data) => {
                     return(
-                        answerList.push(data)
+                        // answerList.push(data)
+                        answerList.push({"option":`1`, "answer":`${data.charCodeAt() - 64}`})
                     )
                 });
                 type = 3;
             }
             question = this.state.question;
             Options.map((data, index) => {
-                optionList.push({"option":`${data}`, "content":`${OptionsContent[index]}`})
+                optionList.push({"option":`${data.charCodeAt() - 64}`, "content":`${OptionsContent[index]}`})
             });
             const request = await reqAddTitles(type, titleCategory, question, answerList, optionList);
             if (request.code === 200) {
@@ -469,8 +506,6 @@ export default class AddTitles extends Component{
             })
         }
     };
-
-
     //判断
     addJudgeTitles = async () => {
 
@@ -479,11 +514,11 @@ export default class AddTitles extends Component{
         else if (this.state.question === "")
             message.error("请输入题目");
         else {
-            this.state.JudgeTitle.answerList.push(this.state.judgeValue);
+            // this.state.JudgeTitle.answerList.push(this.state.judgeValue);
+            this.state.JudgeTitle.answerList.push({"option":`1`, "answer":`${this.state.judgeValue.charCodeAt() - 64}`});
             this.state.JudgeTitle.question = this.state.question;
             const {titleCategory} = this.state;
             const {type, question, answerList, optionList} = this.state.JudgeTitle;
-            console.log(this.state.JudgeTitle);
             const request = await reqAddTitles(type, titleCategory, question, answerList, optionList);
             if (request.code === 200) {
                 message.success(request.msg);
@@ -501,11 +536,11 @@ export default class AddTitles extends Component{
                     answerList:[],
                     optionList:[
                         {
-                            option:"A",
+                            option:"1",
                             content:"正确"
                         },
                         {
-                            option:"B",
+                            option:"2",
                             content:"错误"
                         },
                     ],
@@ -517,18 +552,21 @@ export default class AddTitles extends Component{
 
     //填空
     addFillTitle = async () => {
-
-        if (this.state.fillAnswer === "")
+        const {fillTitleNum, fillTitleContent, question, titleCategory} = this.state;
+        if (this.state.fillTitleContent[0] === "")
             message.error("请填写正确答案");
         else if (this.state.question === "")
             message.error("请输入题目");
         else {
-            this.state.fillTitle.answerList.push(this.state.fillAnswer);
-            this.state.fillTitle.question = this.state.question;
-            const {titleCategory} = this.state;
-            const {type, question, answerList} = this.state.fillTitle;
-            console.log(this.state.JudgeTitle);
-            const request = await reqAddTitles(type, titleCategory, question, answerList,);
+            const {type, answerList, optionList} = this.state.fillTitle;
+            fillTitleNum.map((data, index) => {
+                optionList.push({"option":`${data}`, "content":""});
+                answerList.push({"option":`${data}`, "answer":`${fillTitleContent[index]}`})
+            });
+            console.log(optionList);
+            console.log(answerList);
+
+            const request = await reqAddTitles(type, titleCategory, question, answerList,optionList);
             if (request.code === 200) {
                 message.success(request.msg);
             }else {
@@ -536,13 +574,19 @@ export default class AddTitles extends Component{
             }
             this.setState({
                 question:"",
-                fillAnswer:"",
                 titleCategory: "",
+                fillTitleNum:[
+                    "1"
+                ],
+                fillTitleContent:[
+                    ""
+                ],
                 fiiTitle:{
                     type:1,
                     tag: "",
                     question:"",
                     answerList:[],
+                    optionList:[]
                 }
 
             })
@@ -581,7 +625,7 @@ export default class AddTitles extends Component{
                         <Option value="多选题">多选题</Option>
                         <Option value="判断题">判断题</Option>
                         <Option value="填空题">填空题</Option>
-                        <Option value="简答题">简答题</Option>
+                        <Option value="简答题" disabled={true}>简答题</Option>
                     </Select>
                     <span style={{fontWeight:"bold", fontSize:18, marginLeft:32}}>试题分类:</span>
                     <Input placeholder="请输入试题分类" value={titleCategory} style={{width: 150,marginLeft  :5}} onChange={this.onChange}/>

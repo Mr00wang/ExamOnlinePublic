@@ -4,6 +4,7 @@ import {message} from "antd";
 
 export default function
     ajax1(url, data={}, type='GET') {
+    // console.log(JSON.stringify(data));
     return new Promise((resolve, reject) => {
         let promise;
         if(type === 'GET') {

@@ -5,11 +5,16 @@ import logo from '../../assets/logo3.png'
 import {Link,withRouter} from 'react-router-dom'
 import {Menu,Icon} from "antd";
 import menuList from "../../config/menuConfig";
+import PropTypes from "prop-types";
 const SubMenu = Menu.SubMenu;
 /*
 左侧导航的组件
  */
 class LeftNav extends Component{
+
+    static propTypes = {
+        collapsed: PropTypes.string.isRequired,
+    };
 
     getMenuNodes = (menuList) => {
         return menuList.map(item => {
@@ -62,8 +67,8 @@ class LeftNav extends Component{
 
     render() {
         //得到当前的请求路径
-       // const path =
         let path = this.props.location.pathname;
+        const {collapsed} = this.props;
         //得到需要打开菜单项的key
         const openKey = this.openKey;
         if (path.indexOf("/teacher/group") === 0) {
@@ -82,7 +87,7 @@ class LeftNav extends Component{
             <div  className="left-nav">
                 <Link to="/teacher/home" className="left-nav-header">
                     <img src={logo} alt="logo"/>
-                    <h1>Exam</h1>
+                    <h1>{collapsed === true ? "" : "Exam"}</h1>
                 </Link>
 
                 <Menu
@@ -93,7 +98,6 @@ class LeftNav extends Component{
                     theme="dark"
 
                 >
-
                     {
                         this.menuNodes
                     }

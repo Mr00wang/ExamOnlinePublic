@@ -1,17 +1,19 @@
 import React,{Component} from 'react';
 import {Form, Input} from "antd";
 import PropTypes from 'prop-types'
-const Item = Form.Item
+const Item = Form.Item;
 /*
 人员更新分类组件
  */
-class UpdateGroup extends Component{
+class UpdateForm extends Component{
+
 
     static propTypes = {
-        groupName: PropTypes.string.isRequired,
-        id: PropTypes.string.isRequired,
+        userNoteName: PropTypes.string.isRequired,
+        finalScore: PropTypes.string.isRequired,
         setForm: PropTypes.func.isRequired
     };
+
 
     componentWillMount () {
         // 将form对象通过setForm()传递父组件
@@ -20,34 +22,34 @@ class UpdateGroup extends Component{
 
 
     render() {
-        const {id, groupName} = this.props;
+        const {userNoteName, finalScore} = this.props;
         const {getFieldDecorator} = this.props.form;
         return(
             <Form>
-                <span>群组号</span>
+                <span>备注名</span>
                 <Item>
                     {
 
-                        getFieldDecorator("id",{
+                        getFieldDecorator("userNoteName",{
                             rules: [
-                                {required: true, message: '群组号必须输入'}
+                                {required: true, message: '备注名必须输入'}
                             ],
-                            initialValue: id
+                            initialValue: userNoteName
                         })(
-                            <Input placeholder="请输入用户名" disabled/>
+                            <Input placeholder="请输入备注名"/>
                         )
                     }
                 </Item>
-                <span>分组名称</span>
+                <span>分数</span>
                 <Item>
                     {
-                        getFieldDecorator("groupName",{
+                        getFieldDecorator("finalScore",{
                             rules: [
-                                {required: true, message: '分组名称必须输入'}
+                                {required: true, message: '分数必须输入'}
                             ],
-                            initialValue: groupName
+                            initialValue: finalScore
                         })(
-                            <Input placeholder="请输入分组名称"/>
+                            <Input placeholder="请输入分数"/>
                         )
                     }
                 </Item>
@@ -56,4 +58,4 @@ class UpdateGroup extends Component{
     }
 }
 
-export default Form.create()(UpdateGroup)
+export default Form.create()(UpdateForm)

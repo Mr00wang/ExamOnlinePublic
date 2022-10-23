@@ -10,7 +10,7 @@ import 'react-app-polyfill/ie9'
 import 'react-app-polyfill/stable'
 //读取local中保存user，保存到内存
 const user = storageUtils.getUser();
-const student = storageUtils.getStudent()
+const student = storageUtils.getStudent();
 memoryUtils.user = user;
 memoryUtils.student = student;
 ReactDOM.render(<App />, document.getElementById('root'));

@@ -1,9 +1,9 @@
 import React,{Component} from "react";
 import {formateDate1} from "../../../utils/dateUtils";
-import {reqByGroupCommit, reqGetApplyCommit, reqRefuseGroupCommit, reqSearchGroup} from "../../../api";
+import {reqByGroupCommit, reqGetApplyCommitTeacher, reqRefuseGroupCommit, reqSearchGroup} from "../../../api";
 import memoryUtils from "../../../utils/memoryUtils";
 import {Button, Card, message, Table, Select} from "antd";
-const {Option} = Select
+const {Option} = Select;
 /*
 
  */
@@ -30,24 +30,23 @@ export default class Inform extends Component{
                 groupsId,
             }, () => {this.getGroupCommit()})
         }
-        console.log(groupsId);
 
     };
 
     getGroupCommit =  () => {
         let {groupsId, groups} = this.state;
         groupsId.map(async (item) =>  {
-            const request = await reqGetApplyCommit(item);
+            const request = await reqGetApplyCommitTeacher(item, "");
             if (request.code === 200) {
-                const group = request.data.filter(item => item.status === 0);
-                // console.log(`group`)
-                groups = groups.concat(group);
+                const data = request.data;
+                groups = groups.concat(data.filter(item => item.status === 0));
+                this.setState({
+                    groups
+                })
+            }else if (request.code === 500) {
+                message.error("获取申群通知失败，正在联系技术人员！");
             }
-            this.setState({
-                groups:groups
-            })
         });
-        console.log(this.state.groups)
     };
 
     initColumn = () => {
@@ -99,7 +98,6 @@ export default class Inform extends Component{
     }
 
     onSelectChange = selectedRows => {
-        console.log(selectedRows);
         this.setState({ selectedRows });
     };
 
@@ -111,7 +109,7 @@ export default class Inform extends Component{
             divideGroup: group,
             groupIdValue: value,
             selectedRows:[]
-        },() => {console.log(this.state.selectedRows)});
+        },() => {});
     };
 
     ByGroupCommit = async (userId) => {
@@ -126,7 +124,6 @@ export default class Inform extends Component{
       }  else {
           userList = [userId];
       }
-      console.log(userList);
       const request = await reqByGroupCommit(userList, groupIdValue);
       if (request.code === 200) {
           message.success("批准成功！");

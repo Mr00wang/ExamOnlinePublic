@@ -2,7 +2,7 @@ import React,{Component} from "react";
 import {Statistic, Card, Row, Col, Icon, Button, message} from 'antd';
 import {
     reqByAllGroupCommit,
-    reqGetApplyCommit,
+    reqGetApplyCommitTeacher,
     reqLookExams,
     reqLookTests,
     reqLookTitles,
@@ -18,7 +18,6 @@ export default class Home extends Component{
     state = {
         examCount:0,
         groupsId:[],
-        groupsName:[],
         groupCommit:[],
         testCount:0,
         subjectCount: 0,
@@ -58,41 +57,38 @@ export default class Home extends Component{
     };
 
     getGroup = async () => {
-        let {groupsId, groupsName} = this.state;
-        const request = await reqSearchGroup(memoryUtils.user.userId);
+        let {groupsId} = this.state;
+        const request = await reqSearchGroup(memoryUtils.user.userId, "");
         if (request.code === 200) {
             const data = request.data;
             data.map(item => {
                 groupsId.push(item.id);
-                groupsName.push(item.groupName);
             });
             this.setState({
-                groupsId,
-                groupsName
+                groupsId
             }, () => {this.getGroupCommit()})
+        } else {
+            message.success("获取群组通知失败！正在反馈技术人员！")
         }
 
-        console.log(this.state.groupsId);
-        console.log(this.state.groupsName)
 
     };
 
-    getGroupCommit =  () => {
-        let {groupsId, groupCommit, groupName} = this.state;
-        groupsId.map(async (item,index) =>  {
-            const request = await reqGetApplyCommit(item);
-
+    getGroupCommit =   () => {
+        let {groupsId, groupCommit} = this.state;
+        groupsId.map( async item =>  {
+            const request = await reqGetApplyCommitTeacher(item);
             if (request.code === 200) {
                 const group = request.data;
                 const groupCommitCount = group.filter(item => item.status === 0).length;
-                // console.log(`group`)
-                    groupCommit.push({groupId: item, groupCommitCount:groupCommitCount})
+                groupCommit.push({groupId: item, groupCommitCount:groupCommitCount})
+            } else {
+                message.error("获取申群通知失败，正在联系技术人员！");
             }
             this.setState({
                 groupCommit
             })
         });
-        console.log(this.state.groupCommit)
     };
 
     componentDidMount(): void {
@@ -111,18 +107,15 @@ export default class Home extends Component{
                 groupsId:[],
                 groupCommit:[],
             },() => {this.getGroup()});
-
         }else {
-            message.error(request.msg);
+            message.error("批准失败！");
         }
     };
 
     render() {
         const {examCount, groupCommit, testCount, subjectCount} = this.state;
         return(
-            // <Card style={{ background: '#ECECEC'}}>
             <Card style={{ background: '#F0F2F5'}}>
-            {/*<Card>*/}
                 <Row gutter={16}>
                         <Col span={6}>
                             <div className="quick-path" style={{background: '#1890FF'}} onClick={() => {this.props.history.push('/teacher/exam_manage/add')}}>

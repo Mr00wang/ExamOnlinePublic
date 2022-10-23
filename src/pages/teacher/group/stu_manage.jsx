@@ -49,7 +49,6 @@ export default class StudentManage extends Component{
 
     getUsers = async () => {
         const {id} = this.state.group;
-        console.log(id);
         this.setState({loading:true});
         const request = await reqGetGroupUser(id);
         if (request.code === 200) {
@@ -141,8 +140,6 @@ export default class StudentManage extends Component{
     showUpdate = (user) => {
         // 保存分类对象
         this.user = user
-        //console.log(user)
-        //console.log(user.memberName)
         // 更新状态
         this.setState({
             showStatus: 2
@@ -210,12 +207,10 @@ export default class StudentManage extends Component{
         const user = this.user || {};
         const title = (
             <span>
-                <span>
-                    <LinkButton onClick={() =>
-                        this.props.history.goBack()}>群组</LinkButton>
-                        <Icon type="arrow-right" style={{marginRight: 5}}/>
-                    <span>{groupName}</span>
-                </span>
+                <LinkButton onClick={() =>
+                    this.props.history.goBack()}>群组</LinkButton>
+                    <Icon type="arrow-right" style={{marginRight: 5}}/>
+                <span>{groupName}</span>
             </span>
         );
         const extra = (

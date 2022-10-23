@@ -1,5 +1,5 @@
 import React,{Component} from "react";
-import {Button, Layout, List, Tag, Divider, Radio, Checkbox, message, Modal} from 'antd'
+import {Button, Layout, List, Tag, Divider, Radio, Checkbox, message, Modal, Input} from 'antd'
 import LinkButton from "../../component/link-button";
 import './index.less'
 import {reqCommitExam, reqEnterExam} from "../../api";
@@ -29,7 +29,7 @@ export default class Exam extends Component{
         optionTitleCount: 0,
         optionsTitleCount: 0,
         judgeTitleCount: 0,
-        fillTitleCount: 0,
+        fillTitleCount: 0, //
         clickShow: 1,  //点击显示
         testPaperTotalScore: 20,
         testPaperId: 0,
@@ -41,6 +41,7 @@ export default class Exam extends Component{
         radio:[], //单选题答案
         radios:[], //多选题答案
         judge:[], //判断题答案
+        fill:[], //填空题答案
         CommitVisible: false,
         minutes: '',
         seconds: 0
@@ -48,6 +49,7 @@ export default class Exam extends Component{
 
     getTitle = async () => {
         const examId = this.props.location.state.examId;
+        const {fill} = this.state;
         const request =  await reqEnterExam(examId);
         if (request.code === 200) {
             const {testPaper, examEndTime, examDuration} = request.data
@@ -69,10 +71,10 @@ export default class Exam extends Component{
       const  judgeTitle =  this.state.testPaperSubjectVoList.filter(item => item.type === 4);
       const  fillTitle =  this.state.testPaperSubjectVoList.filter(item => item.type === 1);
       let index = 1;
-        let index1 = 0;
-        let index2 = 0;
-        let index3 = 0;
-        let index4 = 0;
+      let index1 = 0;
+      let index2 = 0;
+      let index3 = 0;
+      let index4 = 0;
       optionTitle.map(item => {
           item['index'] = index1;
           index1++;
@@ -94,22 +96,28 @@ export default class Exam extends Component{
             item['bg'] = "";
             index++;
         });
+        fillTitle.map((item, number) => {
+            item['index'] = index4;
+            index4++;
+            item['AllIndex'] = index;
+            item['bg'] = "";
+            index++;
+            fill[number] = item.optionVoList;
+        });
 
       this.setState({
           optionTitle,
           optionsTitle,
           judgeTitle,
+          fillTitle,
+          fill,
           titleContent: optionTitle[0].question,
           titleCount: this.state.testPaperSubjectVoList.length,
           optionTitleCount: optionTitle.length,
           optionsTitleCount: optionsTitle.length,
           judgeTitleCount: judgeTitle.length,
-      });
-        // console.clear();
-        console.log(optionTitle);
-        console.log(optionsTitle);
-        console.log(judgeTitle);
-
+          fillTitleCount: fillTitle.length,
+      }, () => {});
     };
 
     componentDidMount() {
@@ -130,7 +138,16 @@ export default class Exam extends Component{
                 titleContent: this.state.optionTitle[index].question,
                 subjectScore: this.state.optionTitle[index].subjectScore,
             })
-        }else if (titleType === 3) {
+        }else if (titleType === 1) {
+            this.setState({
+                clickShow: AllIndex,
+                AllIndex,
+                titleType,
+                index : index + 1,
+                titleContent: this.state.fillTitle[index].question,
+                subjectScore: this.state.fillTitle[index].subjectScore,
+            })
+        } else if (titleType === 3) {
             this.setState({
                 clickShow: AllIndex,
                 AllIndex,
@@ -149,42 +166,37 @@ export default class Exam extends Component{
                 subjectScore: this.state.judgeTitle[index].subjectScore,
             })
         }
-
     };
 
     previousTitle = () => {
-        const {AllIndex, index, titleType, optionTitleCount, optionsTitleCount} = this.state;
+        const {AllIndex, index, titleType, optionTitleCount, optionsTitleCount, judgeTitleCount} = this.state;
         if (AllIndex !== 1) {
             if(titleType === 0) {
                 this.setState({
                     AllIndex: AllIndex-1,
                     clickShow: AllIndex-1,
                     index: index-1,
-                    titleContent: this.state.optionTitle[index-1].question,
-                    subjectScore: this.state.optionTitle[index-1].subjectScore,
+                    titleContent: this.state.optionTitle[index-2].question,
+                    subjectScore: this.state.optionTitle[index-2].subjectScore,
                 }, () => {})
             } else if (titleType === 3) {
                 if (index === 1) {
                     this.setState({
                         AllIndex: AllIndex - 1,
                         clickShow: AllIndex-1,
-                        index: optionTitleCount,
-                        titleType: optionTitleCount === 0 ? null : 0,
-                        titleContent: this.state.optionsTitle[index-1].question,
-                        subjectScore: this.state.optionsTitle[index-1].subjectScore,
-                    }, () => {
-
-                    })
+                        index: optionTitleCount === 0 ? optionsTitleCount : optionTitleCount,
+                        titleType: optionTitleCount === 0 ? 1 : 0,
+                        titleContent: this.state.optionTitle[optionTitleCount-1].question,
+                        subjectScore: this.state.optionTitle[optionTitleCount-1].subjectScore,
+                    }, () => {})
                 } else {
                     this.setState({
                         AllIndex: AllIndex - 1,
                         clickShow: AllIndex-1,
                         index: index - 1,
-                        titleContent: this.state.optionsTitle[index-1].question,
-                        subjectScore: this.state.optionsTitle[index-1].subjectScore,
-                    }, () => {
-
-                    })
+                        titleContent: this.state.optionsTitle[index-2].question,
+                        subjectScore: this.state.optionsTitle[index-2].subjectScore,
+                    }, () => {})
                 }
             }else if (titleType === 4) {
                 if (index === 1) {
@@ -192,22 +204,37 @@ export default class Exam extends Component{
                         AllIndex: AllIndex - 1,
                         clickShow: AllIndex-1,
                         index: optionsTitleCount === 0 ? optionTitleCount : optionsTitleCount,
-                        titleType: optionsTitleCount === 0 ? null : 3,
-                        titleContent: this.state.judgeTitle[index-1].question,
-                        subjectScore: this.state.judgeTitle[index-1].subjectScore,
-                    }, () => {
-
-                    })
+                        titleType: optionsTitleCount === 0 ? 0 : 3,
+                        titleContent: this.state.optionsTitle[optionsTitleCount-1].question,
+                        subjectScore: this.state.optionsTitle[optionsTitleCount-1].subjectScore,
+                    }, () => {})
                 } else {
                     this.setState({
                         AllIndex: AllIndex - 1,
                         clickShow: AllIndex-1,
                         index: index - 1,
-                        titleContent: this.state.judgeTitle[index-1].question,
-                        subjectScore: this.state.judgeTitle[index-1].subjectScore,
-                    }, () => {
-
-                    })
+                        titleContent: this.state.judgeTitle[index-2].question,
+                        subjectScore: this.state.judgeTitle[index-2].subjectScore,
+                    }, () => {})
+                }
+            }else {
+                if (index === 1) {
+                    this.setState({
+                        AllIndex: AllIndex - 1,
+                        clickShow: AllIndex-1,
+                        index: judgeTitleCount === 0 ? (optionsTitleCount === 0 ? optionTitleCount : optionsTitleCount) : judgeTitleCount,
+                        titleType: judgeTitleCount === 0 ? (optionsTitleCount === 0 ? 0 : 2) : 4,
+                        titleContent: this.state.judgeTitle[judgeTitleCount-1].question,
+                        subjectScore: this.state.judgeTitle[judgeTitleCount-1].subjectScore,
+                    }, () => {})
+                }else {
+                    this.setState({
+                        AllIndex: AllIndex - 1,
+                        clickShow: AllIndex-1,
+                        index: index - 1,
+                        titleContent: this.state.fillTitle[index-2].question,
+                        subjectScore: this.state.fillTitle[index-2].subjectScore,
+                    }, () => {})
                 }
             }
         }else {
@@ -216,7 +243,7 @@ export default class Exam extends Component{
     };
 
     nextTitle = () => {
-        const {AllIndex, titleCount, index, titleType, optionTitleCount, optionsTitleCount, judgeTitleCount} = this.state;
+        const {AllIndex, titleCount, index, titleType, optionTitleCount, optionsTitleCount, judgeTitleCount, fillTitleCount} = this.state;
         if (AllIndex !== titleCount) {
             if(titleType === 0) {
                 if (index === optionTitleCount) {
@@ -224,17 +251,17 @@ export default class Exam extends Component{
                         AllIndex: AllIndex+1,
                         clickShow: AllIndex+1,
                         index: 1,
-                        titleType: optionsTitleCount === 0 ? 2 : 3,
-                        titleContent: this.state.optionsTitle[index+1].question,
-                        subjectScore: this.state.optionsTitle[index+1].subjectScore,
+                        titleType: optionsTitleCount === 0 ? (judgeTitleCount === 0 ? 1 : 4) : 3,
+                        titleContent: this.state.optionsTitle[0].question,
+                        subjectScore: this.state.optionsTitle[0].subjectScore,
                     }, () => {})
                 }else {
                     this.setState({
                         AllIndex: AllIndex+1,
                         clickShow: AllIndex+1,
                         index: index+1,
-                        titleContent: this.state.optionTitle[index+1].question,
-                        subjectScore: this.state.optionTitle[index+1].subjectScore,
+                        titleContent: this.state.optionTitle[index].question,
+                        subjectScore: this.state.optionTitle[index].subjectScore,
                     }, () => {})
                 }
             } else if (titleType === 3) {
@@ -243,36 +270,49 @@ export default class Exam extends Component{
                         AllIndex: AllIndex + 1,
                         clickShow: AllIndex+1,
                         index: 1,
-                        titleType: judgeTitleCount === 0 ? 2 : 4,
-                        titleContent: this.state.optionsTitle[index+1].question,
-                        subjectScore: this.state.optionsTitle[index+1].subjectScore,
-                    }, () => {
-
-                    })
+                        titleType: judgeTitleCount === 0 ? 1 : 4,
+                        titleContent: this.state.judgeTitle[0].question,
+                        subjectScore: this.state.judgeTitle[0].subjectScore,
+                    }, () => {})
                 } else {
                     this.setState({
                         AllIndex: AllIndex + 1,
                         clickShow: AllIndex+1,
                         index: index + 1,
-                        titleContent: this.state.optionsTitle[index+1].question,
-                        subjectScore: this.state.optionsTitle[index+1].subjectScore,
+                        titleContent: this.state.optionsTitle[index].question,
+                        subjectScore: this.state.optionsTitle[index].subjectScore,
                     }, () => {
 
                     })
                 }
             } else if (titleType === 4) {
+                if (index === judgeTitleCount) {
+                    this.setState({
+                        AllIndex: AllIndex + 1,
+                        clickShow: AllIndex+1,
+                        index: 1,
+                        titleType: fillTitleCount === 0 ? 4 : 1,
+                        titleContent: this.state.fillTitle[0].question,
+                        subjectScore: this.state.fillTitle[0].subjectScore,
+                    }, () => {})
+                }else {
+                    this.setState({
+                        AllIndex: AllIndex + 1,
+                        clickShow: AllIndex+1,
+                        index: index + 1,
+                        titleContent: this.state.judgeTitle[index].question,
+                        subjectScore: this.state.judgeTitle[index].subjectScore,
+                    }, () => {})
+                }
+            } else if (titleType === 1) {
                 this.setState({
                     AllIndex: AllIndex + 1,
                     clickShow: AllIndex+1,
                     index: index + 1,
-                    titleContent: this.state.judgeTitle[index+1].question,
-                    subjectScore: this.state.judgeTitle[index+1].subjectScore,
-                }, () => {
-
-
-                })
+                    titleContent: this.state.fillTitle[index].question,
+                    subjectScore: this.state.fillTitle[index].subjectScore,
+                }, () => {})
             }
-
         } else {
             message.success("已是最后一题")
         }
@@ -291,12 +331,16 @@ export default class Exam extends Component{
         );
         subjectList.filter(item => {
             if (item.testPaperSubjectId === testPaperSubjectId) {
-                item.userAnswer = [e.target.value]
+                let answer = [];
+                answer.push({option: '1', answer: `${e.target.value}`})
+                item.userAnswer = answer;
                 flag = false
             }
         });
         if (flag) {
-            subjectList.push({userAnswer: [e.target.value], testPaperSubjectId:testPaperSubjectId});
+            let answer = [];
+            answer.push({option: '1', answer: `${e.target.value}`});
+            subjectList.push({userAnswer: answer, testPaperSubjectId:testPaperSubjectId});
         }
         this.setState({
             radio,
@@ -304,7 +348,6 @@ export default class Exam extends Component{
             subjectList
         });
         // storageUtils.saveAnswer({radio: radio, radios: this.state.radios, judge: this.state.judge, subjectList: subjectList});
-        console.log(this.state.subjectList)
     };
     optionsAnswerChange = (checkedValues) => {
         let {radios, optionsTitle, AllIndex, subjectList} = this.state;
@@ -320,21 +363,27 @@ export default class Exam extends Component{
         );
         subjectList.filter(item => {
             if (item.testPaperSubjectId === testPaperSubjectId) {
-                item.userAnswer = checkedValues;
+                let answer = [];
+                checkedValues.map(data => {
+                    answer.push({option: '1', answer: `${data}`})
+                });
+                item.userAnswer = answer;
                 flag = false
             }
         });
         if (flag) {
-            subjectList.push({userAnswer: checkedValues, testPaperSubjectId:testPaperSubjectId});
+            let answer = [];
+            checkedValues.map(data => {
+                answer.push({option: '1', answer: `${data}`})
+            });
+            subjectList.push({userAnswer: answer, testPaperSubjectId:testPaperSubjectId});
         }
         this.setState({
             radios,
             optionsTitle,
+            subjectList
         });
-        // console.log(this.state.radios)
-        console.log(this.state.subjectList)
         // storageUtils.saveAnswer({radio: this.state.radio, radios: radios, judge: this.state.judge, subjectList: subjectList});
-
     };
     judgeAnswerChange = (e) => {
         let {judge, judgeTitle, AllIndex, subjectList} = this.state;
@@ -350,24 +399,70 @@ export default class Exam extends Component{
         );
         subjectList.filter(item => {
             if (item.testPaperSubjectId === testPaperSubjectId) {
-                item.userAnswer = [e.target.value]
+                let answer = [];
+                answer.push({option: '1', answer: `${e.target.value}`})
+                item.userAnswer = answer;
                 flag = false
             }
         });
         if (flag) {
-            subjectList.push({userAnswer: [e.target.value], testPaperSubjectId:testPaperSubjectId});
+            let answer = [];
+            answer.push({option: '1', answer: `${e.target.value}`})
+            subjectList.push({userAnswer: answer, testPaperSubjectId:testPaperSubjectId});
         }
         this.setState({
             judge,
             judgeTitle,
             subjectList
         });
-        // console.log(this.state.judge)
-        console.log(this.state.subjectList)
         // storageUtils.saveAnswer({radio: this.state.radio, radios: this.state.radios, judge: judge, subjectList: subjectList});
 
     };
 
+    fillAnswerChange = (e) => {
+        const {fillTitle, AllIndex, subjectList} = this.state;
+        let newData = fillTitle;
+        let testPaperSubjectId;
+        let flag = true;
+        let bgflag = true;
+        const idx = parseInt(e.target.id);
+        newData[this.state.index-1].optionVoList.map((item, index) => {
+            if (index === idx) {
+                item.content = e.target.value;
+            }else if (item.content === "") {
+                bgflag = false
+            }
+        });
+        if (e.target.value === "") {
+            bgflag = false;
+        }
+        if (bgflag) {
+            fillTitle[this.state.index-1].bg = '#2db7f5';
+        }else {
+            fillTitle[this.state.index-1].bg = '';
+        }
+        fillTitle.filter(item => {
+                if (item.AllIndex === AllIndex){
+                    testPaperSubjectId = item.testPaperSubjectId
+                }
+            }
+        );
+        subjectList.filter(item => {
+            if (item.testPaperSubjectId === testPaperSubjectId) {
+                item.userAnswer = newData[this.state.index-1].optionVoList;
+                flag = false
+            }
+        });
+        if (flag) {
+            /*let answer = [];
+            answer.push({option: '1', answer: `${e.target.value}`});*/
+            subjectList.push({userAnswer: newData[this.state.index-1].optionVoList, testPaperSubjectId:testPaperSubjectId});
+        }
+        this.setState({
+            fillTitle: newData,
+            subjectList
+        });
+    };
     showConfirm = () => {
         if (this.state.subjectList.length < this.state.titleCount) {
             confirm({
@@ -401,10 +496,15 @@ export default class Exam extends Component{
                 //准备数据
                 const {userNoteName} = values;
                 const {testPaperId, examId, subjectList} = this.state;
-                console.log(userNoteName);
-                console.log(testPaperId);
-                console.log(examId);
-                console.log(subjectList);
+                let newSubjectList = [];
+                subjectList.map(item => {
+                    item.userAnswer.map(data => {
+                       if (data.content !== undefined) {
+                           data["answer"] = data.content
+                           delete data.content;
+                       }
+                    });
+               });
                 //清除
                 this.form.resetFields();
                 const request = await reqCommitExam(examId, subjectList, userNoteName, testPaperId);
@@ -412,7 +512,7 @@ export default class Exam extends Component{
                     message.success("提交成功");
                     this.props.history.push('/student/myExam');
                 }else {
-                    message.error(request.msg);
+                    message.error("提交失败");
                 }
                 // storageUtils.removeAnswer();
             }
@@ -469,7 +569,7 @@ export default class Exam extends Component{
             titleContent, AllIndex, titleCount,
             clickShow,testPaperTotalScore, endTime,
             examName, subjectScore,
-            radio, judge, radios, CommitVisible,
+            radio, judge, radios,fill, CommitVisible,
             minutes, seconds
         } = this.state;
 
@@ -558,27 +658,6 @@ export default class Exam extends Component{
                             ):null
                         }
                         {
-                            fillTitle.length !== 0 ? (
-                                <div className="exam-item">
-                                    <span>填空题</span>
-                                    <List
-                                        className='exam-List'
-                                        grid={{column:5}}
-                                        dataSource={fillTitle}
-                                        renderItem={item => (
-                                            <List.Item>
-                                                <Tag color={clickShow === item.AllIndex ? '#87d068' : item.bg}>
-                                                    <LinkButton onClick={() => {this.selectTitle(item.index, 2, item.AllIndex)}}>
-                                                        <span style={{color : `${clickShow === item.AllIndex ? 'white' : "black"}`}}>{item.index+1}</span>
-                                                    </LinkButton>
-                                                </Tag>
-                                            </List.Item>
-                                        )}
-                                    />
-                                </div>
-                            ):null
-                        }
-                        {
                             judgeTitle.length !== 0 ? (
                                 <div className="exam-item">
                                     <span>判断题</span>
@@ -590,6 +669,27 @@ export default class Exam extends Component{
                                             <List.Item>
                                                 <Tag color={clickShow === item.AllIndex ? '#87d068' : item.bg}>
                                                     <LinkButton onClick={() => {this.selectTitle(item.index, 4, item.AllIndex)}}>
+                                                        <span style={{color : `${clickShow === item.AllIndex ? 'white' : "black"}`}}>{item.index+1}</span>
+                                                    </LinkButton>
+                                                </Tag>
+                                            </List.Item>
+                                        )}
+                                    />
+                                </div>
+                            ):null
+                        }
+                        {
+                            fillTitle.length !== 0 ? (
+                                <div className="exam-item">
+                                    <span>填空题</span>
+                                    <List
+                                        className='exam-List'
+                                        grid={{column:5}}
+                                        dataSource={fillTitle}
+                                        renderItem={item => (
+                                            <List.Item>
+                                                <Tag color={clickShow === item.AllIndex ? '#87d068' : item.bg}>
+                                                    <LinkButton onClick={() => {this.selectTitle(item.index, 1, item.AllIndex)}}>
                                                         <span style={{color : `${clickShow === item.AllIndex ? 'white' : "black"}`}}>{item.index+1}</span>
                                                     </LinkButton>
                                                 </Tag>
@@ -627,7 +727,7 @@ export default class Exam extends Component{
                                                 optionTitle.length === 0 ? null : optionTitle[index-1].optionVoList.map((data, index) => {
                                                     return(
                                                         <div style={{paddingTop:12}}>
-                                                            <Radio key={index} value={data.option}><Tag color="blue" style={{fontSize:18, height:28, paddingTop:3, marginLeft: 16}}>{data.option}</Tag></Radio>
+                                                            <Radio key={index} value={data.option}><Tag color="blue" style={{fontSize:18, height:28, paddingTop:3, marginLeft: 16}}>{String.fromCharCode(64 + index+1)}</Tag></Radio>
                                                             <span>{data.content}</span>
                                                         </div>
                                                     )
@@ -636,6 +736,23 @@ export default class Exam extends Component{
                                         </Radio.Group>
                                     </div>
                                 ):null
+                            }
+                            {
+                                titleType === 1 ? (
+                                    <div className="exam-option">
+                                        {
+                                            fillTitle.length === 0 ? null : fillTitle[index-1].optionVoList.map((data, index) => {
+                                                return(
+                                                    <div style={{paddingTop:12}}>
+                                                        <Tag color="blue"  style={{fontSize:18, width: 65, height:28, paddingTop:3}}>{`第${data.option}空`}</Tag>
+                                                        <Input id={index} value={data.content}  style={{ width: '40%' }} onChange={this.fillAnswerChange}/><br/>
+                                                    </div>
+
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                ) : null
                             }
                             {
                                 titleType === 3 ? (
@@ -650,7 +767,7 @@ export default class Exam extends Component{
                                                     optionsTitle.length === 0 ? null : optionsTitle[index-1].optionVoList.map((data, index) => {
                                                         return(
                                                             <div style={{paddingTop:12}}>
-                                                                <Checkbox key={index} value={data.option}><Tag color="blue" style={{fontSize:18, height:28, paddingTop:3, marginLeft: 16}}>{data.option}</Tag></Checkbox>
+                                                                <Checkbox key={index} value={data.option}><Tag color="blue" style={{fontSize:18, height:28, paddingTop:3, marginLeft: 16}}>{String.fromCharCode(64 + index+1)}</Tag></Checkbox>
                                                                 <span>{data.content}</span>
                                                             </div>
                                                         )
@@ -669,10 +786,10 @@ export default class Exam extends Component{
                                             onChange={this.judgeAnswerChange}
                                             value={judge[index]}
                                         >
-                                            <Radio value="A"><Tag color="blue" style={{fontSize:18, width: 25, height:28, paddingTop:3, marginLeft: 16}}>A</Tag></Radio>
+                                            <Radio value="1"><Tag color="blue" style={{fontSize:18, width: 25, height:28, paddingTop:3, marginLeft: 16}}>A</Tag></Radio>
                                             <span>正确</span>
                                             <br/><br/>
-                                            <Radio value="B"><Tag color="blue" style={{fontSize:18, width: 25, height:28, paddingTop:3, marginLeft: 16}}>B</Tag></Radio>
+                                            <Radio value="2"><Tag color="blue" style={{fontSize:18, width: 25, height:28, paddingTop:3, marginLeft: 16}}>B</Tag></Radio>
                                             <span>错误</span>
                                         </Radio.Group>
                                     </div>
@@ -686,7 +803,7 @@ export default class Exam extends Component{
                                 <span style={{marginLeft:12, marginRight: 12}}>{`当前第${AllIndex}题/共${titleCount}题`}</span>
                                 <Button type='primary' onClick={this.nextTitle}>下一题</Button>
                             </span>
-                           <span style={{marginLeft: 440}}>
+                           <span style={{marginLeft: '50%'}}>
                                <Button type="primary" onClick={this.showConfirm}>提交试卷</Button>
                            </span>
                             <Modal

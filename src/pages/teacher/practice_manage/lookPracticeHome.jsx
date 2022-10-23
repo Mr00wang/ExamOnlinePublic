@@ -8,28 +8,10 @@ const { Search } = Input;
 /*
 
  */
-/*
-[
-        {
-            "testPaperId": 4,
-            "createTestPaperUserId": 13,
-            "createCompleteTestPaperUserId": null,
-            "completeTestPaperId": null,
-            "testPaperTotalScore": 20.0,
-            "completeTestPaperScore": null,
-            "testPaperCreateDate": 1588809600000,
-            "completeTestPaperCreateDate": null,
-            "completeTestPaperStatus": null,
-            "completeTestPaperUserNoteName": null,
-            "testPaperSubjectVoList": null
-        },
- */
-
 export default class LookPracticeHome extends Component{
 
     state = {
       tests:[],
-
       loading: false,
     };
 
@@ -50,7 +32,6 @@ export default class LookPracticeHome extends Component{
 
     //搜索
     searchTest = async (value) => {
-        console.log(value);
         if (value === "") {
             this.setState({loading: true});
             const request = await reqLookTests(memoryUtils.user.userId);

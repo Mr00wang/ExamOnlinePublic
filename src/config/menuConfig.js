@@ -68,6 +68,23 @@ const menuList = [
         ]
     },
     {
+        title: '培训管理',
+        key: '/teacher/study_manage',
+        icon: 'database',
+        children: [ // 子菜单列表
+            {
+                title: '查看培训',
+                key: '/teacher/study_manage/look',
+                icon: 'eye'
+            },
+            {
+                title: '添加培训',
+                key: '/teacher/study_manage/add',
+                icon: 'plus'
+            },
+        ]
+    },
+    {
         title: '成绩管理',
         key: '/teacher/score_manage',
         icon: 'fund',
@@ -76,7 +93,7 @@ const menuList = [
                 title: '查看成绩',
                 key: '/teacher/score_manage/look',
                 icon: 'eye'
-            },
+            }
         ]
     },
     {

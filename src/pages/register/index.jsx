@@ -34,7 +34,6 @@ class Register extends Component{
                 const {username, password1, password2, identity, nickname, email, code} = values;
                 let roledata = identity;
 
-                console.log(identity);
                 if (password1 !== password2) {
                     message.warn("两次密码输入不一致，请重新输入");
                 } else {
@@ -43,7 +42,6 @@ class Register extends Component{
                     } else {
                         roledata = "0";
                     }
-                    console.log(roledata);
                     const request = await reqRegister(username, password1, nickname, email, code, roledata);
                     if (request.code === 200) {
                         message.success("注册成功");
@@ -150,8 +148,8 @@ class Register extends Component{
                                         //声明式验证，直接使用别人定义好的验证规则进行验证
                                         rules: [
                                             {required: true, whitespace: true, message: '密码必须输入'},
-                                            {min: 8, message: '密码至少8位字母和数字组合，'},
-                                            {max: 12, message: '密码最多16位'},
+                                            {min: 8, message: '密码至少8位，'},
+                                            {max: 16, message: '密码最多16位'},
                                             { pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/, message: '密码必须是英文和数字组成' },
                                         ],
                                         // initialValue: 'admin' //指定初始值

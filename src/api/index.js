@@ -6,16 +6,17 @@
 
 import ajax from "./ajax"
 import ajax1 from "./ajax1"
+// const BASE = '/int';
 const BASE = '';
 
 //用户登陆接口
-export const reqLogin = (username,password) => ajax( BASE+'/login', {username,password}, 'POST');
+export const reqLogin = (username,password) => ajax( BASE+'/main/login', {username,password}, 'POST');
 
 //用户注册接口
 export const reqRegister = (username, password, nickname, email, code, role) => ajax(BASE+'/user/register', {username, password, nickname, email, code,role}, 'POST');
 
 //用户注册发送验证码接口
-export const reqSendCode = (username, email) => ajax(BASE+'/get_email_code', {username, email}, 'POST');
+export const reqSendCode = (username, email) => ajax(BASE+'/main/get_email_code', {username, email}, 'POST');
 
 //查询群组
 export const reqSearchGroup = (groupMasterId, id) => ajax(BASE+'/group/select_group', {groupMasterId, id}, 'POST');
@@ -40,6 +41,10 @@ export const reqApplyAddGroup = (groupId, userId, desc) => ajax(BASE+'/group_req
 
 //查询加群请求
 export const reqGetApplyCommit = (groupId, userId) => ajax1(BASE+'/group_request/select_request', {groupId, userId}, 'POST');
+
+//教师端查询加群请求
+export const reqGetApplyCommitTeacher = (groupId, userId) => ajax(BASE+'/group_request/select_request', {groupId, userId}, 'POST');
+
 
 //群组通过所有加群请求
 export const reqByAllGroupCommit = (groupId) => ajax(BASE+'/group_request/pass_a_group_all_request', {groupId}, 'POST');
@@ -73,6 +78,12 @@ export const reqAddExam = (testPaperId, activityName, isPrivate, examAccessGroup
 
 //修改考试信息接口
 export const reqUpdateExam = (id, activityName, isPrivate, startTime, endTime, examDuration) => ajax(BASE+'/exam/update_exam_activity',{id, activityName, isPrivate,  startTime, endTime, examDuration}, 'POST')
+
+//获取完成试卷详细信息
+export const reqGetCompleteExam = (testPaperId) => ajax(BASE + '/complete_test_paper/select_complete_test_paper_detail', {testPaperId}, 'POST');
+
+//修改已完成考试分数（更新）
+export const reqUpdateCompleteExam = (id, userNoteName, finalScore) => ajax(BASE + '/complete_test_paper/update_complete_test_paper', {id, userNoteName, finalScore}, 'POST');
 
 //查询用户加入群组信息接口
 export const reqLookJoinGroup = (userId) => ajax(BASE+'/group/select_user_join_groups', {userId}, 'POST');

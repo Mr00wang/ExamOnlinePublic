@@ -37,23 +37,41 @@ export default class ShowTitle extends Component{
                     {`(${type})`+ " "+title.question}
                 </div><br/>
                 <div className="test_option">
-                    <ul>
-                        {
-                            title.optionList.map((data, index) => {
-                                return(
-                                    <li type="A">{data.content}</li>
-                                )
-                            })
-                        }
-                    </ul>
+                    {
+                        title.type !== 1 ? (
+                            <ul>
+                                {
+                                    title.optionList.map((data, index) => {
+                                        return(
+                                            <li type="A">{data.content}</li>
+                                        )
+                                    })
+                                }
+                            </ul>
+                        ):null
+                    }
                 </div>
 
                 <div className="test_answer">
                     <span>
-                        正确答案：{title.answerList.map((data, index) => {
-                        return(
-                            <Tag color='green'>{data}</Tag>
-                        )
+                        正确答案：{title.answerList.map((item, index) => {
+                        let color ='green';
+                        let answerCode = "";
+                        /* if (item.answer === 'loser') {
+                             color = 'volcano';
+                         }*/
+                        if (title.type !== 1) {
+                            answerCode = String.fromCharCode(64 + parseInt(item.answer));
+
+                        } else {
+                            answerCode = item.answer;
+                            answerCode = `${item.option}、${answerCode}`
+                        }
+                        return (
+                            <Tag color={color} key={item.answer}>
+                               {answerCode}
+                            </Tag>
+                        );
                     })}
                     </span>
                 </div>

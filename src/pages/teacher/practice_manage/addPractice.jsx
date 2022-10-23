@@ -212,19 +212,29 @@ export default class AddPractice extends Component{
             },
             {
                 title: "试题答案",
-                dataIndex: "answerList",
-                render: answerList => (
+                render: (record) => (
                     <span>
                      {
-                         answerList.map(answer => {
+                         record.answerList.map(item => {
+                             let color ='green';
+                             let answerCode = "";
+                             /* if (item.answer === 'loser') {
+                                  color = 'volcano';
+                              }*/
+                             if (record.type !== 1) {
+                                 answerCode = String.fromCharCode(64 + parseInt(item.answer));
+                             } else {
+                                 answerCode = item.answer;
+                             }
                              return (
-                                 <Tag color="green">
-                                     {answer.toUpperCase()}
+                                 <Tag color={color} key={item.answer}>
+                                     {answerCode}
                                  </Tag>
                              );
                          })
                      }
                   </span>
+
                 )
             },
             {
@@ -266,7 +276,7 @@ export default class AddPractice extends Component{
       this.setState({loading:true});
       const subject = memoryUtils.subject;
       subject.map(data => {
-          data['subjectScore'] = 2
+          data['subjectScore'] = 4
       });
       this.setState({
           loading:false,
@@ -287,8 +297,6 @@ export default class AddPractice extends Component{
         });
         this.setState({ subject: newData });
         memoryUtils.subject = [...newData];
-        console.log(memoryUtils.subject);
-        // console.log(this.state.subject)
     };
 
     moveRow = (dragIndex, hoverIndex) => {
@@ -317,8 +325,6 @@ export default class AddPractice extends Component{
     };
 
     deleteSelectedSubject = title => {
-      message.success(1);
-      console.log(title.id);
       this.setState({
           subject: this.state.subject.filter(item => item.id !== title.id)
       });
@@ -349,7 +355,7 @@ export default class AddPractice extends Component{
         });
       this.setState({
           selectedRows:data
-      },() => {console.log(data)})
+      },() => {})
     };
 
     addSubjects = () => {
@@ -357,7 +363,6 @@ export default class AddPractice extends Component{
         this.setState({
             subject: [...subject, ...selectedRows]
         },() => {
-            console.log(this.state.subject);
             memoryUtils.subject = this.state.subject;
         });
 
@@ -365,13 +370,10 @@ export default class AddPractice extends Component{
 
     addSubjectsAndClose = () => {
         const {subject, selectedRows} = this.state;
-        console.log(this.state.subject);
-        console.log(this.state.selectedRows);
 
         this.setState({
             subject: [...subject, ...selectedRows]
         },() => {
-            console.log(this.state.subject);
             memoryUtils.subject = this.state.subject;
         });
         memoryUtils.subject = this.state.subject;
@@ -391,13 +393,12 @@ export default class AddPractice extends Component{
             if (!err) {
                 this.setState({
                     createModal: false
-                })
+                });
                 const {name} = values;
                 let subjects = [];
                 this.state.subject.map(item => {
                     subjects.push({subjectId:`${item.id}`, subjectScore:item.subjectScore});
                 });
-                console.log(subjects);
                 const request = await reqAddTest(name, subjects);
                 if (request.code === 200) {
                     message.success("创建试卷成功");
@@ -405,7 +406,7 @@ export default class AddPractice extends Component{
                         subject:[]
                     }, () => {memoryUtils.subject = [];})
                 }else {
-                    message.error(request.msg);
+                    message.error("创建试卷失败！");
                 }
             }
         })

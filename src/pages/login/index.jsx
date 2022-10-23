@@ -30,8 +30,6 @@ class Login extends Component{
                     message.success(request.msg);
                     const user = request.data;
                     const {role} = user;
-
-                    console.log(storageUtils.getUser());
                     if (role === 1 || role === "1") {
                         memoryUtils.user = user;
                         storageUtils.saveUser(user);
@@ -56,7 +54,8 @@ class Login extends Component{
 
 
     resetPassword = () => {
-        this.props.history.push("reset_pwd");
+        message.success("系统正在更新修改！")
+        // this.props.history.push("reset_pwd");
     };
     register = () => {
         this.props.history.push("register");
@@ -100,7 +99,7 @@ class Login extends Component{
                                         placeholder="用户名"
                                         prefix={<UserOutlined className="site-form-item-icon"/>}
                                         suffix={
-                                            <Tooltip title="Extra information">
+                                            <Tooltip title="注册时唯一的用户名">
                                                 <InfoCircleOutlined style={{color: 'rgba(0,0,0,.45)'}}/>
                                             </Tooltip>
                                         }
@@ -125,7 +124,7 @@ class Login extends Component{
                                         type="password"
                                         placeholder="密码"
                                         suffix={
-                                            <Tooltip title="Extra information">
+                                            <Tooltip title="8-16位密码">
                                                 <InfoCircleOutlined style={{color: 'rgba(0,0,0,.45)'}}/>
                                             </Tooltip>
                                         }
@@ -133,21 +132,6 @@ class Login extends Component{
                                 )
                             }
                         </Item>
-                        {/*<Item>
-                            {
-                                getFieldDecorator("identity", {
-                                    rules: [
-                                        {required: true, message: '登陆身份必须选择'}
-                                    ],
-                                    // initialValue: '338'
-                                })(
-                                    <Select placeholder="请选择登陆身份">
-                                        <Option value="Teacher">Teacher</Option>
-                                        <Option value="Student">Student</Option>
-                                    </Select>
-                                )
-                            }
-                        </Item>*/}
                         <Item>
                             <div>
                                 <LinkButton onClick={this.resetPassword}>忘记密码？</LinkButton>

@@ -1,4 +1,4 @@
-import React,{Component} from "react";
+import React, {Component} from "react";
 import {formateDate1} from "../../../utils/dateUtils";
 import {Button, Card, message, Table, Icon} from "antd";
 import memoryUtils from "../../../utils/memoryUtils";
@@ -9,12 +9,12 @@ import LinkButton from "../../../component/link-button";
 
  */
 
-export default class MyScore extends Component{
+export default class MyScore extends Component {
     state = {
-        scores:[],
-        loading:false,
-        exams:[],
-        examName:"",
+        scores: [],
+        loading: false,
+        exams: [],
+        examName: "",
     };
 
     initColumn = () => {
@@ -50,7 +50,9 @@ export default class MyScore extends Component{
                 width: 300,
                 render: (exam) => (
                     <span>
-                        <Button onClick={() => {this.showScore(exam)}} type="primary" style={{marginRight: 10 }} >查看成绩</Button>
+                        <Button onClick={() => {
+                            this.showScore(exam)
+                        }} type="primary" style={{marginRight: 10}}>查看成绩</Button>
                     </span>
                 )
             },
@@ -70,21 +72,21 @@ export default class MyScore extends Component{
     };
 
     getExams = async () => {
-        this.setState({loading:true});
+        this.setState({loading: true});
         const request = await reqLookCompleteExam();
         if (request.code === 200) {
             const exams = request.data;
             this.setState({
                 exams,
-                loading:false
+                loading: false
             })
-        }else {
-            message.error(request.msg);
+        } else {
+            message.error("获取考试失败，正在反馈技术人员！");
         }
     };
 
     getScore = async (testPaperId) => {
-        this.setState({loading:true})
+        this.setState({loading: true})
         const request = await reqGetScore(testPaperId, memoryUtils.student.userId);
         if (request.code === 200) {
             const scores = request.data;
@@ -92,8 +94,8 @@ export default class MyScore extends Component{
                 scores,
                 loading: false
             })
-        }else {
-            message.error(request.msg);
+        } else {
+            message.error("获取分数失败，正在反馈技术人员！");
         }
     };
 
@@ -108,14 +110,16 @@ export default class MyScore extends Component{
     showScore = (exam) => {
         this.setState({
             examName: exam.activityName
-        }, () => {this.getScore(exam.testPaperId)})
+        }, () => {
+            this.getScore(exam.testPaperId)
+        })
     };
 
     showExams = () => {
         //更新为显示一级列表的状态
         this.setState({
             examName: '',
-            scores:[]
+            scores: []
         })
     };
 
@@ -128,7 +132,7 @@ export default class MyScore extends Component{
                 <span>{examName}</span>
             </span>
         );
-        return(
+        return (
             <Card title={title}>
                 <Table
                     loading={loading}
@@ -137,7 +141,7 @@ export default class MyScore extends Component{
                     //loading={true}
                     dataSource={examName === "" ? exams : scores}
                     columns={examName === "" ? this.columns : this.columns1}
-                    pagination={{defaultPageSize: 5,showQuickJumper: true, pageSizeOptions : [5,10,15,20]}}
+                    pagination={{defaultPageSize: 5, showQuickJumper: true, pageSizeOptions: [5, 10, 15, 20]}}
                 />
             </Card>
         )

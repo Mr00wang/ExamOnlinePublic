@@ -32,7 +32,6 @@ class AddExam extends Component{
                     ],
                     'examTime': parseInt(fieldsValue['examTime'].format('HH')) * 60 + parseInt(fieldsValue['examTime'].format('mm')),
                 };
-                console.log('Received values of form: ', values);
                 const {testPaperId, activityName, isPrivate, examAccessGroupList, examCalendar,  examTime} = values;
                 this.props.form.resetFields();
                 const request = await reqAddExam(testPaperId, activityName, isPrivate, examAccessGroupList, examCalendar[0], examCalendar[1], examTime);
@@ -45,7 +44,6 @@ class AddExam extends Component{
     };
 
     onChange = checked => {
-        console.log(`switch to ${checked}`);
         this.setState({
             disabled : !checked
         })
